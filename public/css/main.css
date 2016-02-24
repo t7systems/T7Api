@@ -1,0 +1,43 @@
+html, body {
+    height: 100%;
+}
+body {
+    padding-top: 50px;
+}
+.cambox {
+    padding: 0;
+}
+.cambox .image {
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    overflow: hidden;
+    position: relative;
+}
+.cambox .image:after {
+    padding-top: 75%;
+    display: block;
+    content: '';
+}
+.cambox .image img {
+    display: block;
+    min-width: 100%;
+    max-width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+#exit-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10001;
+}
+#chatframe {
+    border: none;
+    height: 100%;
+    width: 100%;
+}

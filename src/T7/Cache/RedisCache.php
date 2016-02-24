@@ -1,0 +1,60 @@
+<?php
+
+namespace T7\Cache;
+
+use ArrayAccess;
+use T7\Contracts\CacheInterface;
+
+class RedisCache implements CacheInterface
+{
+
+    /**
+     * @var \Redis
+     */
+    protected $redis;
+
+    public static function getName()
+    {
+        return 'redis';
+    }
+
+    public function __construct(ArrayAccess $app)
+    {
+
+        if (false == class_exists('Redis')) {
+            throw new \RuntimeException('phpredis extension not found. Please visit https://github.com/phpredis/phpredis');
+        }
+
+        $this->redis = new \Redis();
+        $this->redis->connect($app['cfg']['cache']['redis_host'], $app['cfg']['cache']['redis_port']);
+        $this->redis->select($app['cfg']['cache']['redis_db']);
+        $this->redis->setOption(\Redis::OPT_PREFIX, $app['cfg']['cache']['redis_prefix']);
+    }
+
+    /**
+     * @param string $key
+     * @return array (data,time)
+     */
+    public function get($key)
+    {
+        $data  = $this->redis->get($key);
+        $time  = 0;
+        if ($data) {
+            $time = $this->redis->ttl($key);
+            $data = unserialize($data);
+        }
+
+        return compact('data', 'time');
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value A serializable value
+     * @param int $ttl Number of seconds until the cache expires (Default: forever)
+     * @return void
+     */
+    public function set($key, $value, $ttl = 0)
+    {
+        $this->redis->set($key, serialize($value), Array('nx', 'ex'=>$ttl));
+    }
+}
