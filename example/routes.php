@@ -1,6 +1,6 @@
 <?php
 
-return function($app) {
+return function(Application $app) {
 
     /**
      * One of these 'routes' will be executed at the bottom of this closure
@@ -20,12 +20,12 @@ return function($app) {
     };
 
     $cams = function() use ($app) {
-        $categories = $app['t7_client']->getCategories($app['lang']);
+        $categories = $app->client()->getCategories($app['lang']);
         $category   = 0;
         if (isset($_GET['cat'])) {
             $category = $_GET['cat'];
         }
-        $cams       = $app['t7_client']->getOnlineCams($category, $app['lang']);
+        $cams       = $app->client()->getOnlineCams($category, $app['lang']);
 
         if (isset($app['cfg']['testCamId']) && !empty($app['cfg']['testCamId'])) {
             foreach ($cams as $c) {
@@ -95,7 +95,7 @@ return function($app) {
         }
 
         try {
-            $chatInfo  = $app['t7_client']->getChat($camId, $app['cfg']['seconds'], $nickname, $voyeurMode, $showCam2Cam, $showSendSound, $sendSound);
+            $chatInfo  = $app->client()->getChat($camId, $app['cfg']['seconds'], $nickname, $voyeurMode, $showCam2Cam, $showSendSound, $sendSound);
             $chatUrl   = $chatInfo['url'];
             $sessionId = $chatInfo['sessionId'];
 
@@ -111,7 +111,7 @@ return function($app) {
         if (isset($_SESSION['sessionId']) && !empty($_SESSION['sessionId'])) {
 
             //TODO check if user is still allowed to chat, update DB, ...
-            $app['t7_client']->keepAliveChatSession($_SESSION['sessionId'], $app['cfg']['seconds']);
+            $app->client()->keepAliveChatSession($_SESSION['sessionId'], $app['cfg']['seconds']);
             echo 'ok';
 
         } else {
@@ -120,12 +120,12 @@ return function($app) {
     };
 
     $endChat = function() use ($app) {
-        $app['t7_client']->endChatSession($_SESSION['sessionId']);
+        $app->client()->endChatSession($_SESSION['sessionId']);
         echo 'ok';
     };
 
     $chatExit = function() use ($app) {
-        $chatStatus = $app['t7_client']->getChatStatus($_SESSION['sessionId']);
+        $chatStatus = $app->client()->getChatStatus($_SESSION['sessionId']);
 
         $chatStatus->active;
         $chatStatus->startDate;
@@ -158,9 +158,9 @@ return function($app) {
     };
 
     $sedcard = function() use ($app) {
-        $sedcard = $app['t7_client']->getSedcard($_GET['sedcard'], $app['lang']);
-        $video   = $app['t7_client']->getFreeVideo($_GET['sedcard']);
-        $pics    = $app['t7_client']->getFreePictureGallery($_GET['sedcard'], 'l');
+        $sedcard = $app->client()->getSedcard($_GET['sedcard'], $app['lang']);
+        $video   = $app->client()->getFreeVideo($_GET['sedcard']);
+        $pics    = $app->client()->getFreePictureGallery($_GET['sedcard'], 'l');
 
         require '../views/index.php';
     };

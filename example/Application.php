@@ -11,6 +11,14 @@ class Application implements ArrayAccess
     private $container = array();
 
     /**
+     * @return T7LC\Soap\Client
+     */
+    public function client()
+    {
+        return $this['t7_client'];
+    }
+
+    /**
      * @return bool
      *
      * //TODO refactor into a request object, helper class or something like that
