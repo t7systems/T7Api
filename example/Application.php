@@ -1,9 +1,5 @@
 <?php
 
-namespace T7;
-
-use ArrayAccess;
-
 /**
  * Class Application
  * A very simple dependency injection container.

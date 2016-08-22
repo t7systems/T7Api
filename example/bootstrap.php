@@ -1,9 +1,10 @@
 <?php
 
-use T7\Application;
-use T7\Api\Client;
-use T7\Cache\FileCache;
-use T7\Cache\RedisCache;
+require __DIR__ . '/Application.php';
+
+use T7\Soap\Client;
+use T7\Soap\Cache\FileCache;
+use T7\Soap\Cache\RedisCache;
 
 session_start();
 
@@ -13,7 +14,7 @@ $app         = new Application();
  * Add the configuration to our container
  */
 $app['cfg']  = require '../config/common.php';
-$app['cfg']  = array_merge_recursive($app['cfg'], require '../config/secret.php');
+$app['cfg']  = array_replace_recursive($app['cfg'], require '../config/secret.php');
 
 /**
  * Add a Closure that always returns a fresh SoapClient instance

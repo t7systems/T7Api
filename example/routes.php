@@ -6,6 +6,19 @@ return function($app) {
      * One of these 'routes' will be executed at the bottom of this closure
      */
 
+    $lang = function() use ($app) {
+        switch ($_POST['lang']) {
+            case 'en':
+            case 'de':
+                $_SESSION['lang'] = $_POST['lang'];
+        }
+        if (isset($_POST['redirect'])) {
+            header('Location: ' . $_POST['redirect']);
+        } else {
+            header('Location: /');
+        }
+    };
+
     $cams = function() use ($app) {
         $categories = $app['t7_client']->getCategories($app['lang']);
         $category   = 0;
@@ -25,8 +38,7 @@ return function($app) {
 
     $chatOptions = function() use ($app) {
 
-        $camId = $_GET['chatOptions'];
-
+        $camId         = $_GET['chatOptions'];
         $nickname      = '';
         $voyeurMode    = false;
         $showCam2Cam   = false;
@@ -135,13 +147,22 @@ return function($app) {
          * Do something after session ended.
          *
          * Do not rely on this, since users may just close their browser.
-         * Or the network might fail, so you cannot even query the session state from our API.
+         *
+         * Or the network might fail, so you cannot query the session state from our API at that particular time.
          *
          * Whatever action is necessary, should additionally be performed by a cronjob to cleanup unexpectedly closed/lost sessions.
          *
          */
         unset($_SESSION['sessionId']);
         require '../views/exit.php';
+    };
+
+    $sedcard = function() use ($app) {
+        $sedcard = $app['t7_client']->getSedcard($_GET['sedcard'], $app['lang']);
+        $video   = $app['t7_client']->getFreeVideo($_GET['sedcard']);
+        $pics    = $app['t7_client']->getFreePictureGallery($_GET['sedcard'], 'l');
+
+        require '../views/index.php';
     };
 
     if (isset($$app['route']) && get_class($$app['route']) == 'Closure') {

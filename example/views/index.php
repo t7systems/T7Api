@@ -37,13 +37,22 @@
               <?php endforeach; ?>
             <?php endif; ?>
           </ul>
+          <form method="post" class="navbar-form navbar-right">
+            <input type="hidden" name="redirect" value="<?php echo $_SERVER['REQUEST_URI'] ?>" />
+            <select class="form-control" name="lang" onchange="this.form.submit()">
+              <option value="de" <?php if ($app['lang'] == 'de'): ?>selected="selected"<?php endif; ?>>DE</option>
+              <option value="en" <?php if ($app['lang'] == 'en'): ?>selected="selected"<?php endif; ?>>EN</option>
+            </select>
+          </form>
         </div>
       </div>
     </nav>
 <?php endif; ?>
 
-    <?php if ($app['route'] == 'chatOptions') : ?>
-      <?php include 'chatOptions.php' ?>
+    <?php if ($app['route'] == 'sedcard') : ?>
+      <?php include 'sedcard.php' ?>
+    <?php elseif ($app['route'] == 'chatOptions') : ?>
+      <?php include 'chat_options.php' ?>
     <?php elseif ($app['route'] == 'chat') : ?>
       <?php include 'chat.php' ?>
     <?php elseif ($app['route'] == 'cams') : ?>

@@ -1,6 +1,6 @@
 <?php
 
-namespace T7\Contracts;
+namespace T7\Soap\Contracts;
 
 /**
  * Interface CacheInterface

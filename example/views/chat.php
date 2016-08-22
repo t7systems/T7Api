@@ -1,6 +1,6 @@
 <button id="exit-button" class="btn btn-danger" onclick="chatExit();">EXIT</button>
 
-<iframe id="chatframe" name="chatframe" src="<?php echo $chatUrl ?>"></iframe>
+<iframe id="chatframe" name="chatframe" src="<?php echo $chatUrl ?>" allowfullscreen></iframe>
 
 <script>
     //ask server to extend the chat session
@@ -11,11 +11,11 @@
                 //alert( "Chat session expired!" );
                 window.frames['chatframe'].location.href = "<?php echo $app['cfg']['quitUrl'] ?>";
             } else {
-                keepAliveTimeout = setTimeout(keepAlive, <?php echo $app['cfg']['seconds']/2*1000 ?>);
+                keepAliveTimeout = setTimeout(keepAlive, 5000);
             }
         });
     };
-    keepAliveTimeout = setTimeout(keepAlive, <?php echo $app['cfg']['seconds']/2*1000 ?>);
+    keepAliveTimeout = setTimeout(keepAlive, 5000);
 
     //end chat session and redirect to exit page
     var chatExit = function() {

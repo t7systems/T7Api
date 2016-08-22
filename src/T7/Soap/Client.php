@@ -1,10 +1,10 @@
 <?php
 
-namespace T7\Api;
+namespace T7\Soap;
 
 use SoapClient;
 use ArrayAccess;
-use T7\Contracts\CacheInterface;
+use T7\Soap\Contracts\CacheInterface;
 
 class Client
 {
@@ -43,12 +43,28 @@ class Client
     private $cache;
 
     /**
+     * @var SoapClient
+     */
+    private $soap;
+
+    /**
      * @var array
      */
     private $config;
 
     public function __construct(ArrayAccess $app)
     {
+
+        if (false == isset($app['cache']) || false == $app['cache'] instanceof CacheInterface) {
+            throw new \RuntimeException('Please provide a CacheInterface instance');
+        }
+        if (false == isset($app['cfg']) || false == is_array($app['cfg'])) {
+            throw new \RuntimeException('Please provide an array with configuration parameters');
+        }
+        if (false == isset($app['soap']) || false == $app['soap'] instanceof SoapClient) {
+            throw new \RuntimeException('Please provide a SoapClient instance');
+        }
+
         $this->app        = $app;
         $this->cache      = $app['cache'];
         $this->config     = $app['cfg'];
@@ -204,6 +220,56 @@ class Client
         }
 
         return call_user_func_array('array_merge', $this->cams);
+    }
+
+    public function getSedcard($camId, $lang)
+    {
+
+        $cached = $this->getFromCache('sedcard_' .$camId . '_' . $lang);
+
+        if ($cached['data']) {
+            $sedcard =  $cached['data'];
+        } else {
+            $sedcard = $this->getSoapClient()->getSetcardI18N($this->reqId, $camId, $lang);
+            $this->updateCache('sedcard_' .$camId . '_' . $lang, $sedcard, $this->config['cache']['ttl']['sedcards']);
+        }
+
+        return $sedcard;
+    }
+
+    public function getFreePictureGallery($camId, $size = 'm')
+    {
+
+        $cached = $this->getFromCache('previewpics_' .$camId . '_' . $size);
+
+        if ($cached['data']) {
+            $pics =  $cached['data'];
+        } else {
+            $pics = $this->getSoapClient()->getFreePictureGallery($this->reqId, $camId, $size);
+            $this->updateCache('previewpics_' .$camId . '_' . $size, $pics, $this->config['cache']['ttl']['sedcards']);
+        }
+
+        return $pics;
+    }
+
+    public function getFreeVideo($camId)
+    {
+        $countpreview = 1;
+
+        $cached = $this->getFromCache('freevideo_' .$camId . '_' . $countpreview);
+
+        if ($cached['data']) {
+            $video =  $cached['data'];
+        } else {
+            try {
+                $video = $this->getSoapClient()->getFreeVideo($this->reqId, $camId, $countpreview);
+            } catch (\SoapFault $x) {
+                $video = null;
+            }
+            $this->updateCache('freevideo_' .$camId . '_' . $countpreview, $video, $this->config['cache']['ttl']['sedcards']);
+        }
+
+        return $video;
     }
 
     /**

@@ -4,21 +4,20 @@ if (!is_file('../config/secret.php')) {
     die('Please follow instructions inside cache/secret.php.dist!');
 }
 
-require '../src/autoload.php';
+require '../../src/autoload.php';
 
-$app = require '../src/bootstrap.php';
+$app = require '../bootstrap.php';
 
 /**
  * From this point things get quick and dirty ;)
  */
 
-//TODO dynamically set language
-$app['lang']  = 'de';
-
 //default route
 $app['route'] = 'cams';
 
-if (isset($_GET['chatOptions'])) {
+if (isset($_POST['lang'])) {
+    $app['route'] = 'lang';
+} else if (isset($_GET['chatOptions'])) {
     $app['route'] = 'chatOptions';
 } else if (isset($_GET['chat'])) {
     $app['route'] = 'chat';
@@ -28,8 +27,12 @@ if (isset($_GET['chatOptions'])) {
     $app['route'] = 'endChat';
 } else if (isset($_GET['chatExit'])) {
     $app['route'] = 'chatExit';
+} else if (isset($_GET['sedcard'])) {
+    $app['route'] = 'sedcard';
 }
 
-$routes = require '../src/routes.php';
+$app['lang'] = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'de';
+
+$routes = require '../routes.php';
 
 $routes($app);

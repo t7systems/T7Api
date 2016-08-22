@@ -1,4 +1,4 @@
 /cache
-/config/secret.php
+/example/config/secret.php
 .idea/
 .project/

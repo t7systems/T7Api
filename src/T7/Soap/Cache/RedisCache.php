@@ -1,9 +1,9 @@
 <?php
 
-namespace T7\Cache;
+namespace T7\Soap\Cache;
 
 use ArrayAccess;
-use T7\Contracts\CacheInterface;
+use T7\Soap\Contracts\CacheInterface;
 
 class RedisCache implements CacheInterface
 {
@@ -27,8 +27,16 @@ class RedisCache implements CacheInterface
 
         $this->redis = new \Redis();
         $this->redis->connect($app['cfg']['cache']['redis_host'], $app['cfg']['cache']['redis_port']);
+
+        if (false == empty($app['cfg']['cache']['redis_pass'])) {
+            if (false == $this->redis->auth($app['cfg']['cache']['redis_pass'])) {
+                throw new \RuntimeException('Redis auth failed!');
+            }
+        }
+
         $this->redis->select($app['cfg']['cache']['redis_db']);
         $this->redis->setOption(\Redis::OPT_PREFIX, $app['cfg']['cache']['redis_prefix']);
+
     }
 
     /**

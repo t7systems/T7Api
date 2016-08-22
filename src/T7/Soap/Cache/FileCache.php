@@ -1,10 +1,10 @@
 <?php
 
-namespace T7\Cache;
+namespace T7\Soap\Cache;
 
 
 use ArrayAccess;
-use T7\Contracts\CacheInterface;
+use T7\Soap\Contracts\CacheInterface;
 
 class FileCache implements CacheInterface
 {
@@ -34,6 +34,7 @@ class FileCache implements CacheInterface
 
         if (is_file($file)) {
             $contents = file_get_contents($file);
+            //TODO revisit before 2286-11-20!!
             $expire   = substr($contents, 0, 10);
         } else {
             return array('data' => null, 'time' => null);
