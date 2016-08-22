@@ -8,36 +8,51 @@
         <link href="css/main.css" rel="stylesheet">
     </head>
     <body>
-        <a target="_top" href="<?php echo $_SERVER['PHP_SELF'] ?>">The chat ended. You will be redirected shortly. If not, click here...</a>
-        <table class="table table-striped">
-            <tr>
-                <th>
-                    Start
-                </th>
-                <th>
-                    Stop
-                </th>
-            </tr>
-            <tr>
-                <td>
-                    <?php echo $startTime ?>
-                </td>
-                <td>
-                    <?php echo $stopTime ?>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <?php echo $startTimeUTC ?> (UTC)
-                </td>
-                <td>
-                    <?php echo $stopTimeUTC ?> (UTC)
-                </td>
-            </tr>
-        </table>
+        <div class="container-fluid">
+            <?php if (isset($redirect)): ?>
+                <a target="_top" href="<?php echo $redirect ?>">You will be redirected shortly. If not, click here...</a>
+            <?php else: ?>
+                <a target="_top" href="<?php echo $_SERVER['PHP_SELF'] ?>">You will be redirected shortly. If not, click here...</a>
+            <?php endif; ?>
+            <?php if (isset($chatStatus)): ?>
+                <table class="table table-striped">
+                    <tr>
+                        <th>
+                            Start
+                        </th>
+                        <th>
+                            Stop
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <?php echo $startTime ?>
+                        </td>
+                        <td>
+                            <?php echo $stopTime ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <?php echo $startTimeUTC ?> (UTC)
+                        </td>
+                        <td>
+                            <?php echo $stopTimeUTC ?> (UTC)
+                        </td>
+                    </tr>
+                </table>
+            <?php endif; ?>
+        </div>
         <script>
-            //TODO redirect user instead of displaying debug information...
-            //window.top.location.href = "<?php echo $_SERVER['PHP_SELF'] ?>";
+            //clear timeout to prevent parent window from redirecting elsewhere
+            window._T7LC_keepAliveTimeout && clearTimeout(window._T7LC_keepAliveTimeout);
+
+            <?php if (isset($redirect)): //redirect from voyeur to chat ?>
+                window.top.location.href = "<?php echo $redirect ?>";
+            <?php else: ?>
+                //redirect users to overview page or sedcard or...
+                //window.top.location.href = "<?php echo $_SERVER['PHP_SELF'] ?>";
+            <?php endif; ?>
         </script>
     </body>
 </html>

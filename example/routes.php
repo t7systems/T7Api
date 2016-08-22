@@ -45,7 +45,7 @@ return function(Application $app) {
             $livePreviews[$cam->camID] = $app->client()->getLivePreviewPic($cam->camID);
         }
 
-        require '../views/index.php';
+        require __DIR__ . '/views/index.php';
     };
 
     $chatOptions = function() use ($app) {
@@ -72,14 +72,14 @@ return function(Application $app) {
             $sendSound     = $_SESSION['sendsound'];
         }
 
-        require '../views/index.php';
+        require __DIR__ . '/views/index.php';
     };
 
     $chat = function() use ($app) {
         //TODO check if user is allowed to chat, prepare DB, ...
 
         //TODO Sanitize somehow!
-        $camId = $_GET['chat'];
+        $camId = $_SESSION['chat_camid'] = $_GET['chat'];
         if (isset($_GET['nickname'])) {
             $nickname      = $_SESSION['nickname']      = $_GET['nickname'];
         } else {
@@ -120,7 +120,8 @@ return function(Application $app) {
         } catch (\SoapFault $ex) {
             $app['route'] = 'offline';
         }
-        require '../views/index.php';
+        $app['route'] = 'chat';
+        require __DIR__ . '/views/index.php';
     };
 
     $keepAlive = function() use ($app) {
@@ -141,36 +142,64 @@ return function(Application $app) {
     };
 
     $chatExit = function() use ($app) {
-        $chatStatus = $app->client()->getChatStatus($_SESSION['sessionId']);
 
-        $chatStatus->active;
-        $chatStatus->startDate;
-        $chatStatus->stopDate;
+        if (isset($_GET['err']) && $_GET['err'] == 'startchat') {
 
-        $start = new DateTime();
-        $start->setTimestamp($chatStatus->startDate);
-        $stop  = new DateTime();
-        $stop->setTimestamp($chatStatus->stopDate);
+            /**
+             * Switch from voyeur to normal chat.
+             *
+             * In order to do that, we need to start a new chat session.
+             * Take old parameters from session and set voyeurMode to '0'
+             */
 
-        $startTime    = $start->setTimezone(new DateTimeZone('Europe/Berlin'))->format('H:i:s');
-        $stopTime     = $stop->setTimezone(new DateTimeZone('Europe/Berlin'))->format('H:i:s');
+            unset($_SESSION['sessionId']);
+            $redirectParams = array(
+                'chat'          => $_SESSION['chat_camid'],
+                'nickname'      => $_SESSION['nickname'],
+                'voyeurMode'    => 0,
+                'showCam2Cam'   => $_SESSION['showcam2cam'],
+                'showSendSound' => $_SESSION['showsendsound'],
+                'sendSound'     => $_SESSION['sendsound'],
+            );
 
-        $startTimeUTC = $start->setTimezone(new DateTimeZone('UTC'))->format('H:i:s');
-        $stopTimeUTC  = $stop->setTimezone(new DateTimeZone('UTC'))->format('H:i:s');
+            $redirect = '/?' . http_build_query($redirectParams);
 
-        /**
-         * TODO
-         * Do something after session ended.
-         *
-         * Do not rely on this, since users may just close their browser.
-         *
-         * Or the network might fail, so you cannot query the session state from our API at that particular time.
-         *
-         * Whatever action is necessary, should additionally be performed by a cronjob to cleanup unexpectedly closed/lost sessions.
-         *
-         */
-        unset($_SESSION['sessionId']);
-        require '../views/exit.php';
+        } else if (isset($_SESSION['sessionId'])) {
+
+            $chatStatus = $app->client()->getChatStatus($_SESSION['sessionId']);
+
+            $chatStatus->active;
+            $chatStatus->startDate;
+            $chatStatus->stopDate;
+
+            $start = new DateTime();
+            $stop  = new DateTime();
+            $start->setTimestamp($chatStatus->startDate);
+            $stop->setTimestamp($chatStatus->stopDate);
+
+            $startTime    = $start->setTimezone(new DateTimeZone('Europe/Berlin'))->format('H:i:s');
+            $stopTime     = $stop->setTimezone(new DateTimeZone('Europe/Berlin'))->format('H:i:s');
+
+            $startTimeUTC = $start->setTimezone(new DateTimeZone('UTC'))->format('H:i:s');
+            $stopTimeUTC  = $stop->setTimezone(new DateTimeZone('UTC'))->format('H:i:s');
+
+            /**
+             * TODO
+             * Do something after session ended.
+             *
+             * Do not rely on this, since users may just close their browser.
+             *
+             * Or the network might fail, so you cannot query the session state from our API at that particular time.
+             *
+             * Whatever action is necessary, should additionally be performed by a cronjob to cleanup unexpectedly closed/lost sessions.
+             *
+             */
+            unset($_SESSION['sessionId']);
+
+        }
+
+        require __DIR__ . '/views/exit.php';
+
     };
 
     $sedcard = function() use ($app) {
@@ -179,7 +208,7 @@ return function(Application $app) {
         $video   = $app->client()->getFreeVideo($_GET['sedcard']);
         $pics    = $app->client()->getFreePictureGallery($_GET['sedcard'], 'l');
 
-        require '../views/index.php';
+        require __DIR__ . '/views/index.php';
     };
 
     if (isset($$app['route']) && get_class($$app['route']) == 'Closure') {

@@ -9,7 +9,12 @@ require '../../src/autoload.php';
 $app = require '../bootstrap.php';
 
 /**
- * From this point things get quick and dirty ;)
+ * To keep it simple, we use $_GET/$_POST parameters to determine the requested route.
+ *
+ * Inside the routes closure ('routes.php'), a route is matched against this parameter and
+ * a corresponding 'view' is included to render the response body.
+ *
+ * You may want to use a more sophisticated way to do that (see Symfony et al.)
  */
 
 //default route
