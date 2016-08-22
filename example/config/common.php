@@ -9,11 +9,11 @@ return array(
         'content' => 'https://content.777live.com/soap/1_4/getcontent.php',
     ),
 
-    //Chat sessions are created with the following ttl in seconds (should be 10 as a minimum)
-    'seconds'          => '30',
+    //Chat sessions are created with the following ttl in seconds (should be > 10 as a minimum)
+    'seconds'          => '10',
 
     //Callback URL for ended chat sessions. Users will be redirected to this URL.
-    'quitUrl'          => 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?chatExit',
+    'quitUrl'          => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?chatExit',
 
     /**
      * Application specific options:
