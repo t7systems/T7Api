@@ -3,7 +3,7 @@
 /**
  * Class Application
  * A very simple dependency injection container.
- * @package T7
+ * @package T7LC
  */
 class Application implements ArrayAccess
 {

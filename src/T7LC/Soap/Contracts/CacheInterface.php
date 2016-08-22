@@ -1,11 +1,11 @@
 <?php
 
-namespace T7\Soap\Contracts;
+namespace T7LC\Soap\Contracts;
 
 /**
  * Interface CacheInterface
  * Basic interface for Cache operations (get/set)
- * @package T7\Cache
+ * @package T7LC\Cache
  */
 interface CacheInterface
 {

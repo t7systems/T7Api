@@ -2,9 +2,9 @@
 
 require __DIR__ . '/Application.php';
 
-use T7\Soap\Client;
-use T7\Soap\Cache\FileCache;
-use T7\Soap\Cache\RedisCache;
+use T7LC\Soap\Client;
+use T7LC\Soap\Cache\FileCache;
+use T7LC\Soap\Cache\RedisCache;
 
 session_start();
 

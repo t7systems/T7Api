@@ -1,9 +1,9 @@
 <?php
 
-namespace T7\Soap\Cache;
+namespace T7LC\Soap\Cache;
 
 use ArrayAccess;
-use T7\Soap\Contracts\CacheInterface;
+use T7LC\Soap\Contracts\CacheInterface;
 
 class RedisCache implements CacheInterface
 {

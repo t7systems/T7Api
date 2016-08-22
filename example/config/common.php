@@ -27,8 +27,8 @@ return array(
         ),
 
         //'file', 'redis'
-        //'type'         => \T7\Soap\Cache\FileCache::getName(),
-        'type'         => \T7\Soap\Cache\RedisCache::getName(),
+        //'type'         => \T7LC\Soap\Cache\FileCache::getName(),
+        'type'         => \T7LC\Soap\Cache\RedisCache::getName(),
 
         //FileCache:
         //A writable directory to store API data
