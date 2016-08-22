@@ -1,9 +1,5 @@
 <?php
 
-if (!is_file('../config/secret.php')) {
-    die('Please follow instructions inside cache/secret.php.dist!');
-}
-
 require '../../src/autoload.php';
 
 $app = require '../bootstrap.php';

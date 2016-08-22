@@ -1,5 +1,18 @@
 <?php
 
+//ensure this is false for production environments!
+//ini_set( "display_errors", false);
+
+if (ini_get( "display_errors")) {
+    set_exception_handler(function (Exception $ex){
+        require __DIR__ . '/error500.php';
+    });
+}
+
+if (!is_file('../config/custom.php')) {
+    throw new RuntimeException('Please follow instructions inside '.realpath(__DIR__.'/../config/custom.php.dist').'!', 7770);
+}
+
 require __DIR__ . '/Application.php';
 
 use T7LC\Soap\Client;
@@ -11,10 +24,10 @@ session_start();
 $app         = new Application();
 
 /**
- * Add the configuration to our container
+ * Add configuration to container
  */
 $app['cfg']  = require '../config/common.php';
-$app['cfg']  = array_replace_recursive($app['cfg'], require '../config/secret.php');
+$app['cfg']  = array_replace_recursive($app['cfg'], require '../config/custom.php');
 
 /**
  * Add a Closure that always returns a fresh SoapClient instance
@@ -36,7 +49,7 @@ switch($app['cfg']['cache']['type']) {
         $app['cache']     = new RedisCache($app);
         break;
     default:
-        throw new \RuntimeException('Unknown or missing cache type: ' . $app['cfg']['cache']['type']);
+        throw new \RuntimeException('Unknown or missing cache type: ' . $app['cfg']['cache']['type'], 7772);
 }
 
 /**

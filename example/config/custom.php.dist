@@ -1,0 +1,48 @@
+<?php
+//copy this file and save as 'custom.php'
+//replace 'xxx' with values received from 777 support
+return array(
+
+    'reqId'         => 'xxx',
+    'secretKey'     => 'xxx',
+
+    //replace all camids with this ID. Keep empty ('') to disable test show
+    'testCamId'     => '',
+
+    //Chat sessions are created with the following ttl in seconds (should be > 10 as a minimum)
+    'seconds'          => '10',
+
+    //Callback URL for ended chat sessions. Users will be redirected to this URL.
+    'quitUrl'          => '//' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?chatExit',
+
+    /**
+     * A caching mechanism MUST be provided.
+     * Caching options MAY be adjusted here.
+     */
+    'cache'            => array(
+        //time in seconds until cache is invalid
+        'ttl' => array(
+            'categories' => 3600,
+            'cams'       => 60,
+            'sedcards'   => 3600,
+        ),
+
+        //Uncomment the following line to use FileCache
+        'type'         => \T7LC\Soap\Cache\FileCache::getName(),
+
+        //Uncomment the following line to use RedisCache
+        //'type'         => \T7LC\Soap\Cache\RedisCache::getName(),
+
+        //FileCache:
+        //A writable directory to store API data
+        'dir'          => realpath(__DIR__ . '/..') . '/cache',
+
+        //RedisCache
+        'redis_host'   => '127.0.0.1',
+        'redis_port'   => null, //use default
+        'redis_db'     => 2,
+        'redis_prefix' => 't7api_cache',
+        'redis_pass'   => '',
+    ),
+
+);

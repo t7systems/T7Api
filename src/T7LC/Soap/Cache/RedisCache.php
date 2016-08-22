@@ -20,11 +20,9 @@ class RedisCache implements CacheInterface
 
     public function __construct(ArrayAccess $app)
     {
-
-        if (false == class_exists('Redis')) {
-            throw new \RuntimeException('phpredis extension not found. Please visit https://github.com/phpredis/phpredis');
+        if (false == class_exists('Redis', false)) {
+            throw new \RuntimeException('phpredis extension not found. Please visit https://github.com/phpredis/phpredis', 7771);
         }
-
         $this->redis = new \Redis();
         $this->redis->connect($app['cfg']['cache']['redis_host'], $app['cfg']['cache']['redis_port']);
 
