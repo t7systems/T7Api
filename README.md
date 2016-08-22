@@ -1,3 +1,8 @@
-For an example application, see:
+# T7LC SOAP API
+## Client and Example implementation
 
-[a relative link](example/README.md)
+The code provided should be self-explanatory ;)
+
+For details and In-Code-Documentaion™, see:
+
+[example/](example/)
