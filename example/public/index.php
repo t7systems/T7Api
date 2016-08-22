@@ -17,6 +17,8 @@ $app['route'] = 'cams';
 
 if (isset($_POST['lang'])) {
     $app['route'] = 'lang';
+} else if (isset($_POST['livesnap'])) {
+    $app['route'] = 'livesnap';
 } else if (isset($_GET['chatOptions'])) {
     $app['route'] = 'chatOptions';
 } else if (isset($_GET['chat'])) {
@@ -31,7 +33,8 @@ if (isset($_POST['lang'])) {
     $app['route'] = 'sedcard';
 }
 
-$app['lang'] = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'de';
+$app['lang']     = isset($_SESSION['lang'])     ? $_SESSION['lang']     : 'de';
+$app['livesnap'] = isset($_SESSION['livesnap']) ? $_SESSION['livesnap'] : '0';
 
 $routes = require '../routes.php';
 

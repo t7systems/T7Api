@@ -179,7 +179,7 @@ class Client
      * Returns an array with online cams for given category
      * @param int $categoryId
      * @param string $lang
-     * @return mixed
+     * @return mixedgetOnlineCams
      */
     public function getOnlineCams($categoryId, $lang)
     {

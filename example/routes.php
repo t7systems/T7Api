@@ -19,6 +19,19 @@ return function(Application $app) {
         }
     };
 
+    $livesnap = function() use ($app) {
+        switch ($_POST['livesnap']) {
+            case '0':
+            case '1':
+                $_SESSION['livesnap'] = $_POST['livesnap'];
+        }
+        if (isset($_POST['redirect'])) {
+            header('Location: ' . $_POST['redirect']);
+        } else {
+            header('Location: /');
+        }
+    };
+
     $cams = function() use ($app) {
         $categories = $app->client()->getCategories($app['lang']);
         $category   = 0;
@@ -27,10 +40,9 @@ return function(Application $app) {
         }
         $cams       = $app->client()->getOnlineCams($category, $app['lang']);
 
-        if (isset($app['cfg']['testCamId']) && !empty($app['cfg']['testCamId'])) {
-            foreach ($cams as $c) {
-                $c->camID = $app['cfg']['testCamId'];
-            }
+        $livePreviews = array();
+        foreach ($cams as $cam) {
+            $livePreviews[$cam->camID] = $app->client()->getLivePreviewPic($cam->camID);
         }
 
         require '../views/index.php';
@@ -92,6 +104,10 @@ return function(Application $app) {
             $sendSound     = $_SESSION['sendsound']     = (bool)$_GET['sendsound'];
         } else {
             $sendSound     = $_SESSION['sendsound']     = false;
+        }
+
+        if (isset($app['cfg']['testCamId']) && !empty($app['cfg']['testCamId'])) {
+            $camId = $app['cfg']['testCamId'];
         }
 
         try {
