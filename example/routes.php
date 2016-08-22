@@ -175,6 +175,7 @@ return function(Application $app) {
 
     $sedcard = function() use ($app) {
         $sedcard = $app->client()->getSedcard($_GET['sedcard'], $app['lang']);
+        unset($sedcard->ipAddress);
         $video   = $app->client()->getFreeVideo($_GET['sedcard']);
         $pics    = $app->client()->getFreePictureGallery($_GET['sedcard'], 'l');
 
