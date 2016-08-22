@@ -5,7 +5,7 @@
 
 if (ini_get( "display_errors")) {
     set_exception_handler(function (Exception $ex){
-        require __DIR__ . '/error500.php';
+        require __DIR__ . '/views/error500.php';
     });
 }
 
