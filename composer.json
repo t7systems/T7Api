@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "T7LC\\": "src/"
+            "T7LC\\": "src/T7LC"
         }
     }
 }
