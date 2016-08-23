@@ -1,0 +1,19 @@
+{
+    "name": "t7systems/t7lc-api",
+    "description": "T7LC SOAP API Client",
+    "authors": [
+        {
+            "name": "Jan",
+            "email": "jan@777live.com"
+        }
+    ],
+    "license": "proprietary",
+    "require": {
+        "php": "^5.5.28",
+    },
+    "autoload": {
+        "psr-4": {
+            "T7LC\\": "src/"
+        }
+    }
+}

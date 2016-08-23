@@ -3,3 +3,5 @@
 /example/config/custom.php
 .idea/
 .project/
+
+/vendor/
