@@ -5,7 +5,7 @@ namespace T7LC\Soap\Contracts;
 /**
  * Interface CacheInterface
  * Basic interface for Cache operations (get/set)
- * @package T7LC\Cache
+ * @package T7LC\Soap\Contracts
  */
 interface CacheInterface
 {

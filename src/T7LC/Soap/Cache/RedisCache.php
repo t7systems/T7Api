@@ -2,9 +2,13 @@
 
 namespace T7LC\Soap\Cache;
 
-use ArrayAccess;
 use T7LC\Soap\Contracts\CacheInterface;
 
+/**
+ * Class RedisCache
+ * Caches data to redis server
+ * @package T7LC\Soap\Cache
+ */
 class RedisCache implements CacheInterface
 {
 
@@ -18,22 +22,32 @@ class RedisCache implements CacheInterface
         return 'redis';
     }
 
-    public function __construct(ArrayAccess $app)
+    public function __construct(array $options = array())
     {
         if (false == class_exists('Redis', false)) {
             throw new \RuntimeException('phpredis extension not found. Please visit https://github.com/phpredis/phpredis', 7771);
         }
-        $this->redis = new \Redis();
-        $this->redis->connect($app['cfg']['cache']['redis_host'], $app['cfg']['cache']['redis_port']);
 
-        if (false == empty($app['cfg']['cache']['redis_pass'])) {
-            if (false == $this->redis->auth($app['cfg']['cache']['redis_pass'])) {
+        $defaults = array(
+            'redis_host'   => '127.0.0.1',
+            'redis_port'   => null,
+            'redis_db'     => 0,
+            'redis_prefix' => 't7api_cache',
+            'redis_pass'   => '',
+        );
+        $options = array_replace_recursive($defaults, $options);
+
+        $this->redis = new \Redis();
+        $this->redis->connect($options['redis_host'], $options['redis_port']);
+
+        if (isset($options['redis_pass']) && false == empty($options['redis_pass'])) {
+            if (false == $this->redis->auth($options['redis_pass'])) {
                 throw new \RuntimeException('Redis auth failed!');
             }
         }
 
-        $this->redis->select($app['cfg']['cache']['redis_db']);
-        $this->redis->setOption(\Redis::OPT_PREFIX, $app['cfg']['cache']['redis_prefix']);
+        $this->redis->select($options['redis_db']);
+        $this->redis->setOption(\Redis::OPT_PREFIX, $options['redis_prefix']);
 
     }
 

@@ -1,6 +1,5 @@
 /cache
-/example/cache/
-/example/config/custom.php
+/example
 .idea/
 .project/
 

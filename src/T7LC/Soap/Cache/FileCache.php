@@ -2,26 +2,30 @@
 
 namespace T7LC\Soap\Cache;
 
-
-use ArrayAccess;
 use T7LC\Soap\Contracts\CacheInterface;
 
+/**
+ * Class FileCache
+ * Caches data to file system
+ * @package T7LC\Soap\Cache
+ */
 class FileCache implements CacheInterface
 {
 
-    /**
-     * @var ArrayAccess
-     */
-    private $app;
+    private $options;
 
     public static function getName()
     {
         return 'file';
     }
 
-    public function __construct(ArrayAccess $app)
+    public function __construct(array $options = array())
     {
-        $this->app = $app;
+        $this->options = $options;
+
+        if (!isset($this->options['dir'])) {
+            $this->options['dir'] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 't7api_cache';
+        }
     }
 
     /**
@@ -71,7 +75,7 @@ class FileCache implements CacheInterface
         @mkdir(dirname($file), 0777, true);
 
         if (!is_dir(dirname($file))) {
-            throw new \RuntimeException('Please create directory "'.$this->app['cfg']['cache']['dir'].'" and make it writable');
+            throw new \RuntimeException('Please create directory "'.$this->options['dir'].'" and make it writable');
         }
 
         file_put_contents($file, $timestamp.serialize($value));
@@ -79,7 +83,7 @@ class FileCache implements CacheInterface
 
     public function flush()
     {
-        $cacheDir = $this->app['cfg']['cache']['dir'];
+        $cacheDir = $this->options['dir'];
 
         $this->delTree($cacheDir);
 
@@ -93,10 +97,11 @@ class FileCache implements CacheInterface
     {
         $parts = array_slice(str_split($hash = md5($key), 2), 0, 2);
 
-        return $this->app['cfg']['cache']['dir'].'/'.implode('/', $parts).'/'.$hash;
+        return $this->options['dir'].'/'.implode('/', $parts).'/'.$hash;
     }
 
-    protected function delTree($dir) {
+    protected function delTree($dir)
+    {
         $files = array_diff(scandir($dir), array('.','..'));
         foreach ($files as $file) {
             (is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file");

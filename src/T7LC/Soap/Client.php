@@ -3,9 +3,13 @@
 namespace T7LC\Soap;
 
 use SoapClient;
-use ArrayAccess;
 use T7LC\Soap\Contracts\CacheInterface;
 
+/**
+ * Class Client
+ * Wraps SoapClient calls and caches results.
+ * @package T7LC\Soap
+ */
 class Client
 {
     const CONTENT_TYPE_LIVE_PREVIEW_PIC  = 3;
@@ -33,11 +37,6 @@ class Client
     private $cams;
 
     /**
-     * @var ArrayAccess
-     */
-    private $app;
-
-    /**
      * @var CacheInterface;
      */
     private $cache;
@@ -50,29 +49,30 @@ class Client
     /**
      * @var array
      */
-    private $config;
+    private $options;
 
-    public function __construct(ArrayAccess $app)
+    public function __construct(SoapClient $soap, CacheInterface $cache, array $options)
     {
+        $defaults = array(
+            'contentUrl'  => 'https://content.777live.com/soap/1_4/getcontent.php',
+            'quitUrl'     => '/?chatExit',
+            'cache'       => array(
+                'ttl'     => array(
+                    'categories' => 3600,
+                    'cams'       => 60,
+                    'sedcards'   => 3600,
+                ),
+            )
+        );
 
-        if (false == isset($app['cache']) || false == $app['cache'] instanceof CacheInterface) {
-            throw new \RuntimeException('Please provide a CacheInterface instance');
-        }
-        if (false == isset($app['cfg']) || false == is_array($app['cfg'])) {
-            throw new \RuntimeException('Please provide an array with configuration parameters');
-        }
-        if (false == isset($app['soap']) || false == $app['soap'] instanceof SoapClient) {
-            throw new \RuntimeException('Please provide a SoapClient instance');
-        }
-
-        $this->app        = $app;
-        $this->cache      = $app['cache'];
-        $this->config     = $app['cfg'];
-        $this->soap       = $app['soap'];
-        $this->reqId      = $this->config['reqId'];
-        $this->secretKey  = $this->config['secretKey'];
+        $this->cache      = $cache;
+        $this->options    = array_replace_recursive($defaults, $options);
+        $this->soap       = $soap;
+        $this->reqId      = $this->options['reqId'];
+        $this->secretKey  = $this->options['secretKey'];
         $this->cams       = null;
         $this->categories = null;
+
     }
 
     /**
@@ -93,7 +93,7 @@ class Client
             'reqid='         . $this->reqId,
             'csid='          . $chatSession->sessID,
             'quittarget='    . '_parent', //legacy parameter, just ignore that, but keep it here ;)
-            'quiturl='       . urlencode($this->config['quitUrl']),
+            'quiturl='       . urlencode($this->options['quitUrl']),
             'showcam2cam='   . ($showCam2Cam   ? '1' : '0'),
             'showsendsound=' . ($showSendSound ? '1' : '0'),
             'sendsound='     . ($sendsound     ? '1' : '0')
@@ -167,7 +167,7 @@ class Client
                 $this->categories = $cached['data'];
             } else {
                 $this->categories = $this->getSoapClient()->getCategoriesI18N($this->reqId, $lang);
-                $this->updateCache('categories_' . $lang, $this->categories, $this->config['cache']['ttl']['categories']);
+                $this->updateCache('categories_' . $lang, $this->categories, $this->options['cache']['ttl']['categories']);
             }
 
         }
@@ -196,7 +196,7 @@ class Client
                 $this->cams[$categoryId] = $cached['data'];
             } else {
                 $this->cams[$categoryId] = $this->getSoapClient()->getOnlineCamsI18N($this->reqId, $categoryId, $lang);
-                $this->updateCache('cams' . '_' . $categoryId . '_' . $lang, $this->cams[$categoryId], $this->config['cache']['ttl']['cams']);
+                $this->updateCache('cams' . '_' . $categoryId . '_' . $lang, $this->cams[$categoryId], $this->options['cache']['ttl']['cams']);
             }
 
         }
@@ -231,7 +231,7 @@ class Client
             $sedcard =  $cached['data'];
         } else {
             $sedcard = $this->getSoapClient()->getSetcardI18N($this->reqId, $camId, $lang);
-            $this->updateCache('sedcard_' .$camId . '_' . $lang, $sedcard, $this->config['cache']['ttl']['sedcards']);
+            $this->updateCache('sedcard_' .$camId . '_' . $lang, $sedcard, $this->options['cache']['ttl']['sedcards']);
         }
 
         return $sedcard;
@@ -246,7 +246,7 @@ class Client
             $pics =  $cached['data'];
         } else {
             $pics = $this->getSoapClient()->getFreePictureGallery($this->reqId, $camId, $size);
-            $this->updateCache('previewpics_' .$camId . '_' . $size, $pics, $this->config['cache']['ttl']['sedcards']);
+            $this->updateCache('previewpics_' .$camId . '_' . $size, $pics, $this->options['cache']['ttl']['sedcards']);
         }
 
         return $pics;
@@ -266,7 +266,7 @@ class Client
             } catch (\SoapFault $x) {
                 $video = null;
             }
-            $this->updateCache('freevideo_' .$camId . '_' . $countpreview, $video, $this->config['cache']['ttl']['sedcards']);
+            $this->updateCache('freevideo_' .$camId . '_' . $countpreview, $video, $this->options['cache']['ttl']['sedcards']);
         }
 
         return $video;
@@ -277,7 +277,7 @@ class Client
      */
     protected function getSoapClient()
     {
-        return $this->app['soap'];
+        return $this->soap;
     }
 
     /**
@@ -287,7 +287,7 @@ class Client
      */
     protected function getContentURL($contentType, $params)
     {
-        $url       = $this->config['urls']['content'].'?';
+        $url       = $this->options['contentUrl'].'?';
         $query     = 'ctype='.$contentType.'&';
         $query    .= implode('&',$params);
         $signature = sha1($query.$this->secretKey,false);
