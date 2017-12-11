@@ -40,7 +40,19 @@ class ClientServiceProvider
                             $wsdl = $container['cfg']['urls']['wsdl'];
                         }
 
-                        return new \SoapClient($wsdl);
+                        //avoid PHP SOAP user_agent bug
+                        $opts = array(
+                            'http' => array(
+                                'user_agent' => 'PHPSoapClient'
+                            )
+                        );
+                        $context = stream_context_create($opts);
+                        $soapClientOptions = array(
+                            'stream_context' => $context,
+                            'cache_wsdl'     => WSDL_CACHE_NONE
+                        );
+
+                        return new \SoapClient($wsdl, $soapClientOptions);
                     };
                 }
 
