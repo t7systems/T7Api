@@ -176,16 +176,16 @@ class Client
     }
 
     /**
-     * Returns an array with online cams for given category
+     * Returns an array with online cams for given category (category=0 => all categories)
      * @param int $categoryId
      * @param string $lang
-     * @return mixedgetOnlineCams
+     * @return mixed
      */
     public function getOnlineCams($categoryId, $lang)
     {
 
         if (!isset($categoryId) || $categoryId <= 0) {
-          return $this->getAllOnlineCams($lang);
+            $categoryId = 0;
         }
 
         if (!isset($this->cams[$categoryId])) {
@@ -201,25 +201,6 @@ class Client
 
         }
         return $this->cams[$categoryId];
-    }
-
-    /**
-     * Returns a merged array of all online cams
-     * @param string $lang
-     * @return mixed
-     */
-    public function getAllOnlineCams($lang)
-    {
-        if ($this->categories == NULL) {
-            $this->getCategories($lang);
-        }
-
-        foreach ($this->categories as $cat) {
-            $catId              = $cat->catID;
-            $this->cams[$catId] = $this->getOnlineCams($catId, $lang);
-        }
-
-        return call_user_func_array('array_merge', $this->cams);
     }
 
     public function getSedcard($camId, $lang)
