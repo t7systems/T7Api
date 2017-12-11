@@ -6,7 +6,7 @@ PHP >= 5.5
 
 ### Example Application
 
-For an (almost) instant start, see [T7Api-Example](http://devel01.sntt.local/T7/T7Api-Example)
+For an (almost) instant start, see [T7Api-Example](https://github.com/t7systems/T7Api-Example)
 
 ### Getting Started
 
@@ -17,12 +17,12 @@ Since this package is not available via Packagist, you have to add this reposito
 ```
 "repositories": [
    {
-       "url": "http://devel01.sntt.local/T7/T7Api.git",
+       "url": "https://github.com/t7systems/T7Api.git",
        "type": "git"
    }
 ],
 "require": {
-   "t7systems/t7lc-api": "~0.0.11"
+   "t7systems/t7lc-api": "~0.0.13"
 }
 ```
 
@@ -30,4 +30,4 @@ Since this package is not available via Packagist, you have to add this reposito
 
 TBD...
 
-In the meantime, have a look at [T7Api-Example](https://git.dirtyherri.de/T7/T7Api-Example)
+In the meantime, have a look at [T7Api-Example](https://github.com/t7systems/T7Api-Example)
