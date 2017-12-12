@@ -176,6 +176,29 @@ class Client
     }
 
     /**
+     * Returns an array with all categories + subcategories
+     * @param string $lang
+     * @return null
+     */
+    public function getAllCategories($lang)
+    {
+        if ($this->categories == NULL) {
+
+            $cached = $this->getFromCache('categories_all_' . $lang);
+
+            if ($cached['data']) {
+                $this->categories = $cached['data'];
+            } else {
+                $this->categories = $this->getSoapClient()->getAllCategoriesI18N($this->reqId, $lang);
+                $this->updateCache('categories_all_' . $lang, $this->categories, $this->options['cache']['ttl']['categories']);
+            }
+
+        }
+
+        return $this->categories;
+    }
+
+    /**
      * Returns an array with online cams for given category (category=0 => all categories)
      * @param int $categoryId
      * @param string $lang
