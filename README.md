@@ -22,7 +22,7 @@ Since this package is not available via Packagist, you have to add this reposito
    }
 ],
 "require": {
-   "t7systems/t7lc-api": "~0.0.14"
+   "t7systems/t7lc-api": "~0.0.15"
 }
 ```
 
