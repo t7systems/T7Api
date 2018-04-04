@@ -83,9 +83,10 @@ class Client
      * @param boolean $startVoyeur
      * @param boolean $showCam2Cam
      * @param boolean $showSendSound
+     * @param string $lang (optional) chat client interface language (de|en)
      * @return array Array with 'sessionId' and 'url' (use for redirect or iFrame)
      */
-    public function getChat($camId, $seconds, $nickname, $startVoyeur, $showCam2Cam, $showSendSound, $sendsound)
+    public function getChat($camId, $seconds, $nickname, $startVoyeur, $showCam2Cam, $showSendSound, $sendsound, $lang = 'en')
     {
         $chatSession = $this->getSoapClient()->beginChatSession($this->reqId, $camId, $seconds, $nickname, $startVoyeur);
 
@@ -96,7 +97,8 @@ class Client
             'quiturl='       . urlencode($this->options['quitUrl']),
             'showcam2cam='   . ($showCam2Cam   ? '1' : '0'),
             'showsendsound=' . ($showSendSound ? '1' : '0'),
-            'sendsound='     . ($sendsound     ? '1' : '0')
+            'sendsound='     . ($sendsound     ? '1' : '0'),
+            'lang='          . $lang,
         );
 
         return array(
